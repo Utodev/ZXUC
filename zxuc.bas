@@ -113,7 +113,25 @@ FUNCTION turboDesc(value as UByte) AS String
 END FUNCTION
 
 FUNCTION freqDesc(value as UByte) AS String
- RETURN "F" + STR$(value)
+ IF value = 0 THEN RETURN "28.125": END IF
+ IF value = 1 THEN RETURN "28.571": END IF
+ IF value = 2 THEN RETURN "30    ": END IF
+ IF value = 3 THEN RETURN "31.25 ": END IF
+ IF value = 4 THEN RETURN "32.143": END IF
+ IF value = 5 THEN RETURN "33.333": END IF
+ IF value = 6 THEN RETURN "34.615": END IF
+ IF value = 7 THEN RETURN "35.714": END IF
+END FUNCTION
+
+FUNCTION freqDescVert(value as UByte) AS String
+ IF value = 0 THEN RETURN "50.303": END IF
+ IF value = 1 THEN RETURN "51.102": END IF
+ IF value = 2 THEN RETURN "53.657": END IF
+ IF value = 3 THEN RETURN "55.893": END IF
+ IF value = 4 THEN RETURN "57.490": END IF
+ IF value = 5 THEN RETURN "59.619": END IF
+ IF value = 6 THEN RETURN "61.912": END IF
+ IF value = 7 THEN RETURN "63.878": END IF
 END FUNCTION
 
 
@@ -199,7 +217,8 @@ SUB TurboMenu()
 	
 	PRINT
 	PRINT "    \{p7}\{i0}T\{p0}\{i7} TURBO: "; turboDesc(TURBO): PRINT
-	PRINT "    \{p7}\{i0}F\{p0}\{i7} FREQ: "; freqDesc(FREQ): PRINT
+	PRINT "    \{p7}\{i0}F\{p0}\{i7} MASTER FREQ: "; freqDesc(FREQ); " Hz": PRINT
+	PRINT "      VERT   FREQ: "; freqDescVert(FREQ); " Hz": PRINT
 	PRINT "    \{p7}\{i0}E\{p0}\{i7} ENSCAN: "; onOff(ENSCAN): PRINT
 	PRINT "    \{p7}\{i0}V\{p0}\{i7} VGA: "; onOff(VGA): PRINT
 	PRINT "    \{p7}\{i0}B\{p0}\{i7} BACK"
@@ -368,7 +387,7 @@ PAPER 0: BORDER 5: INK 7: BRIGHT 1: CLS
 header()
 PRINT:PRINT
 PRINT "      \{p7}\{i0}J\{p0}\{i7} JOYSTICK SETTINGS": PRINT
-PRINT "      \{p7}\{i0}T\{p0}\{i7} TURBO SETTINGS": PRINT
+PRINT "      \{p7}\{i0}T\{p0}\{i7} TURBO & VGA SETTINGS": PRINT
 PRINT "      \{p7}\{i0}H\{p0}\{i7} HARDWARE SETTINGS": PRINT
 PRINT "      \{p7}\{i0}R\{p0}\{i7} RESET": PRINT
 PRINT "      \{p7}\{i0}E\{p0}\{i7} EXIT"
