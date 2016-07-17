@@ -85,6 +85,7 @@ FUNCTION joyType(value as UByte) AS String
 	IF value=1 THEN RETURN "Kempston ": END IF
 	IF value=2 THEN RETURN "Sinclair1": END IF
 	IF value=3 THEN RETURN "Sinclair2": END IF
+	IF value=4 THEN RETURN "Cursor   ": END IF
 	RETURN ""
 END FUNCTION
 
@@ -170,14 +171,14 @@ SUB JoystickMenu()
 	'Change key joystick mode
 	IF a$ = "1" THEN 
 		LET JoyKey = JoyKey+1
-		IF JoyKey = 4 THEN LET JoyKey = 0: END IF
+		IF JoyKey = 5 THEN LET JoyKey = 0: END IF
 		JOYCONF = (JoyDB9AutoFire << 7) bOR (JoyDB9 << 4) bOR (JoyKeyAutoFire << 3) bOR JoyKey
         setZXUnoReg(6,JOYCONF): GO TO joymenu
     END IF
     'Change DB9 joystick mode
 	IF a$ = "2" THEN 
 		LET JoyDB9 = JoyDB9+1
-		IF JoyDB9 = 4 THEN LET JoyDB9 = 0: END IF
+		IF JoyDB9 = 5 THEN LET JoyDB9 = 0: END IF
 		JOYCONF = (JoyDB9AutoFire << 7) bOR (JoyDB9 << 4) bOR (JoyKeyAutoFire << 3) bOR JoyKey
         setZXUnoReg(6,JOYCONF): GO TO joymenu
     END IF
