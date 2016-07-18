@@ -30,6 +30,12 @@ SUB setZXUnoReg(numreg as UByte, value as UByte)
   OUT 64571, numreg: OUT 64827, value
 END SUB
 
+FUNCTION getULATiming(value as UByte)
+	DIM ULATIMINGMODE0, ULATIMINGMODE1 as UByte
+	LET ULATIMINGMODE0  = (value bAND 00010000b) >> 4
+	LET ULATIMINGMODE1  = (value bAND 01000000b) >> 6
+	RETURN ULATIMINGMODE0 bOR (ULATIMINGMODE1 << 1)
+END FUNCTION
 
 FUNCTION bitToggle(value as UByte, bitno as UByte) as UByte
    RETURN value bXOR (1 << bitno)
@@ -124,15 +130,42 @@ FUNCTION freqDesc(value as UByte) AS String
  IF value = 7 THEN RETURN "35.714": END IF
 END FUNCTION
 
-FUNCTION freqDescVert(value as UByte) AS String
- IF value = 0 THEN RETURN "50.303": END IF
- IF value = 1 THEN RETURN "51.102": END IF
- IF value = 2 THEN RETURN "53.657": END IF
- IF value = 3 THEN RETURN "55.893": END IF
- IF value = 4 THEN RETURN "57.490": END IF
- IF value = 5 THEN RETURN "59.619": END IF
- IF value = 6 THEN RETURN "61.912": END IF
- IF value = 7 THEN RETURN "63.878": END IF
+FUNCTION freqDescVert(value, timing as UByte) AS String
+	IF timing = 0 THEN
+		 IF value = 0 THEN RETURN "50.303": END IF
+		 IF value = 1 THEN RETURN "51.102": END IF
+		 IF value = 2 THEN RETURN "53.657": END IF
+		 IF value = 3 THEN RETURN "55.893": END IF
+		 IF value = 4 THEN RETURN "57.490": END IF
+		 IF value = 5 THEN RETURN "59.619": END IF
+		 IF value = 6 THEN RETURN "61.912": END IF
+		 IF value = 7 THEN RETURN "63.878": END IF
+	END IF
+
+	IF timing = 1 THEN
+		 IF value = 0 THEN RETURN "49.580": END IF
+		 IF value = 1 THEN RETURN "50.366": END IF
+		 IF value = 2 THEN RETURN "52.885": END IF
+		 IF value = 3 THEN RETURN "55.089": END IF
+		 IF value = 4 THEN RETURN "56.663": END IF
+		 IF value = 5 THEN RETURN "58.761": END IF
+		 IF value = 6 THEN RETURN "61.021": END IF
+		 IF value = 7 THEN RETURN "62.958": END IF
+	END IF
+
+	IF timing = 2 THEN
+		 IF value = 0 THEN RETURN "49.046": END IF
+		 IF value = 1 THEN RETURN "49.824": END IF
+		 IF value = 2 THEN RETURN "52.316": END IF
+		 IF value = 3 THEN RETURN "54.496": END IF
+		 IF value = 4 THEN RETURN "56.053": END IF
+		 IF value = 5 THEN RETURN "58.128": END IF
+		 IF value = 6 THEN RETURN "60.364": END IF
+		 IF value = 7 THEN RETURN "62.280": END IF
+	END IF
+	
+	RETURN "??.???"
+
 END FUNCTION
 
 
@@ -207,7 +240,7 @@ END SUB
 
 SUB TurboMenu()
 	CLS
-	DIM SCANDBLCTRL, TURBO, FREQ, ENSCAN, VGA as UByte
+	DIM SCANDBLCTRL, TURBO, FREQ, ENSCAN, VGA, ULATIMINGAUX as UByte
 	turbomenu:
 	header(): PRINT:PRINT:PRINT
 	LET SCANDBLCTRL = getZXUnoReg($0b)
@@ -215,11 +248,13 @@ SUB TurboMenu()
 	LET FREQ = (SCANDBLCTRL bAND 00011100b) >> 2
 	LET ENSCAN = (SCANDBLCTRL bAND 00000010b) >> 1
 	LET VGA = SCANDBLCTRL bAND 00000001b 
+	LET MASTERCONF = getZXUnoReg($00)
+	LET ULATIMINGAUX = getULATiming(MASTERCONF)
 	
 	PRINT
 	PRINT "    \{p7}\{i0}T\{p0}\{i7} TURBO: "; turboDesc(TURBO): PRINT
 	PRINT "    \{p7}\{i0}F\{p0}\{i7} MASTER FREQ: "; freqDesc(FREQ); " Hz": PRINT
-	PRINT "      VERT   FREQ: "; freqDescVert(FREQ); " Hz": PRINT
+	PRINT "      VERT   FREQ: "; freqDescVert(FREQ, ULATIMINGAUX); " Hz": PRINT
 	PRINT "    \{p7}\{i0}E\{p0}\{i7} ENSCAN: "; onOff(ENSCAN): PRINT
 	PRINT "    \{p7}\{i0}V\{p0}\{i7} VGA: "; onOff(VGA): PRINT
 	PRINT "    \{p7}\{i0}B\{p0}\{i7} BACK"
@@ -267,15 +302,13 @@ END SUB
 
 SUB HardwareMenu()
 	CLS
-	DIM DEVCONTROL,  DEVCTRL2, MASTERCONF, ULATIMINGMODE0, ULATIMINGMODE1, ULATIMING as UByte
+	DIM DEVCONTROL,  DEVCTRL2, MASTERCONF, ULATIMING, ULATIMINGMODE1, ULATIMINGMODE0 as UByte
 	hardwaremenu:
 	header() 
 	LET DEVCONTROL = getZXUnoReg($0e)
 	LET DEVCTRL2 =  getZXUnoReg($0f)
 	LET MASTERCONF =  getZXUnoReg($00)
-	LET ULATIMINGMODE0  = (MASTERCONF bAND 00010000b) >> 4
-	LET ULATIMINGMODE1  = (MASTERCONF bAND 01000000b) >> 6
-	LET ULATIMING = ULATIMINGMODE0 bOR (ULATIMINGMODE1 << 1)
+	LET ULATIMING = getULATiming(MASTERCONF)
 	
 	PRINT
 	PRINT "   \{p7}\{i0}S\{p0}\{i7} SD Card       : "; onOff(notBitTest(DEVCONTROL,7))
