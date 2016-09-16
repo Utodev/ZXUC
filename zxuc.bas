@@ -7,7 +7,7 @@
 
 SUB header()
 	PRINT AT 0,0;
-	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; "   ZX-UNO CONFIG (C) 2016 Uto   "; PAPER 1;"                                ";
+	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.2 (C) 2016 Uto "; PAPER 1;"                                ";
 END SUB
 
 FUNCTION getKey() as String
@@ -67,7 +67,7 @@ FUNCTION getCOREID() as String
 	LET B = getZXUnoReg($FF)
 	LET c$ = ""
 	WHILE B<>0
-		IF (B<32) OR (B>127) RETURN "OLD CORE": END IF
+		IF (B<32) OR (B>127) RETURN "OLD CORE OR NON ZX-UNO": END IF
 	 	LET c$ = c$ + CHR$(B)
 	 	LET B = IN 64827
 	END WHILE
@@ -87,11 +87,12 @@ FUNCTION BinaryStr(value as UByte) AS string
 END FUNCTION
 
 FUNCTION joyType(value as UByte) AS String
-	IF value=0 THEN RETURN "Disabled " : END IF
-	IF value=1 THEN RETURN "Kempston ": END IF
-	IF value=2 THEN RETURN "Sinclair1": END IF
-	IF value=3 THEN RETURN "Sinclair2": END IF
-	IF value=4 THEN RETURN "Cursor   ": END IF
+	IF value=0 THEN RETURN "Disabled  " : END IF
+	IF value=1 THEN RETURN "Kempston  ": END IF
+	IF value=2 THEN RETURN "Sinclair1 ": END IF
+	IF value=3 THEN RETURN "Sinclair2 ": END IF
+	IF value=4 THEN RETURN "Cursor/AGF ": END IF
+	IF value=5 THEN RETURN "Fuller     ": END IF
 	RETURN ""
 END FUNCTION
 
@@ -204,14 +205,14 @@ SUB JoystickMenu()
 	'Change key joystick mode
 	IF a$ = "1" THEN 
 		LET JoyKey = JoyKey+1
-		IF JoyKey = 5 THEN LET JoyKey = 0: END IF
+		IF JoyKey = 6 THEN LET JoyKey = 0: END IF
 		JOYCONF = (JoyDB9AutoFire << 7) bOR (JoyDB9 << 4) bOR (JoyKeyAutoFire << 3) bOR JoyKey
         setZXUnoReg(6,JOYCONF): GO TO joymenu
     END IF
     'Change DB9 joystick mode
 	IF a$ = "2" THEN 
 		LET JoyDB9 = JoyDB9+1
-		IF JoyDB9 = 5 THEN LET JoyDB9 = 0: END IF
+		IF JoyDB9 = 6 THEN LET JoyDB9 = 0: END IF
 		JOYCONF = (JoyDB9AutoFire << 7) bOR (JoyDB9 << 4) bOR (JoyKeyAutoFire << 3) bOR JoyKey
         setZXUnoReg(6,JOYCONF): GO TO joymenu
     END IF
