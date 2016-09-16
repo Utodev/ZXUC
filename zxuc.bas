@@ -89,9 +89,9 @@ END FUNCTION
 FUNCTION joyType(value as UByte) AS String
 	IF value=0 THEN RETURN "Disabled  " : END IF
 	IF value=1 THEN RETURN "Kempston  ": END IF
-	IF value=2 THEN RETURN "Sinclair1 ": END IF
-	IF value=3 THEN RETURN "Sinclair2 ": END IF
-	IF value=4 THEN RETURN "Cursor/AGF ": END IF
+	IF value=2 THEN RETURN "SJS1      ": END IF
+	IF value=3 THEN RETURN "SJS2      ": END IF
+	IF value=4 THEN RETURN "Protek    ": END IF
 	IF value=5 THEN RETURN "Fuller     ": END IF
 	RETURN ""
 END FUNCTION
