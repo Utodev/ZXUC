@@ -120,18 +120,35 @@ FUNCTION turboDesc(value as UByte) AS String
 	RETURN ""
 END FUNCTION
 
-FUNCTION freqDesc(value as UByte) AS String
- IF value = 0 THEN RETURN "28.125": END IF
- IF value = 1 THEN RETURN "28.571": END IF
- IF value = 2 THEN RETURN "30    ": END IF
- IF value = 3 THEN RETURN "31.25 ": END IF
- IF value = 4 THEN RETURN "32.143": END IF
- IF value = 5 THEN RETURN "33.333": END IF
- IF value = 6 THEN RETURN "34.615": END IF
- IF value = 7 THEN RETURN "35.714": END IF
+FUNCTION coptDESC(value as UByte) AS String
+	IF value=0 THEN RETURN "Spectrum" : END IF
+	IF value=1 THEN RETURN "PAL     " : END IF
+	RETURN ""
 END FUNCTION
 
-FUNCTION freqDescVert(value, timing as UByte) AS String
+FUNCTION modelDesc(value as UByte) AS String
+ 	IF value = 0 THEN RETURN "48K     ": END IF
+	IF value = 1 THEN RETURN "128K    ": END IF
+	IF value = 2 THEN RETURN "Pentagon": END IF
+END FUNCTION
+
+FUNCTION freqDesc(value as UByte) AS String
+  RETURN STR$(value)
+END FUNCTION
+
+FUNCTION freqDescVert23(value as UByte) AS String
+	 IF value = 0 THEN RETURN "50 48K/Pen": END IF
+	 IF value = 1 THEN RETURN "50 128K   ": END IF
+	 IF value = 2 THEN RETURN "52       ": END IF
+	 IF value = 3 THEN RETURN "53       ": END IF
+	 IF value = 4 THEN RETURN "55       ": END IF
+	 IF value = 5 THEN RETURN "57       ": END IF
+	 IF value = 6 THEN RETURN "59       ": END IF
+	 IF value = 7 THEN RETURN "60       ": END IF
+END	FUNCTION
+
+
+FUNCTION freqDescVert22(value, timing as UByte) AS String
 	IF timing = 0 THEN
 		 IF value = 0 THEN RETURN "50.303": END IF
 		 IF value = 1 THEN RETURN "51.102": END IF
@@ -235,17 +252,111 @@ SUB JoystickMenu()
 END SUB  
 
 '******************************************************************************
+'***************************        JOYSTICK        ***************************
+'******************************************************************************
+
+
+SUB ScreenAlignmentMenu()
+	CLS
+	DIM model, HOFFS48K, VOFFS48K, HOFFS128K, VOFFS128K, HOFFSPEN, VOFFSPEN as UByte
+	LET model = 0
+	screenmenu:
+	header(): PRINT:PRINT:PRINT
+	LET HOFFS48K = getZXUnoReg($80) 
+	LET VOFFS48K = getZXUnoReg($81) 
+	LET HOFFS128K = getZXUnoReg($82) 
+	LET VOFFS128K = getZXUnoReg($83) 
+	LET HOFFSPEN = getZXUnoReg($84) 
+	LET VOFFSPEN = getZXUnoReg($85)
+
+	
+	PRINT
+	PRINT "    \{p7}\{i0}M\{p0}\{i7} MODEL: "; modelDesc(model): PRINT
+	IF (model=0) THEN
+		PRINT "    \{p7}\{i0}Q\{p0}\{i7}-\{p7}\{i0}A\{p0}\{i7} VERTICAL: "; VOFFS48K; "  ": PRINT
+		PRINT "    \{p7}\{i0}O\{p0}\{i7}-\{p7}\{i0}P\{p0}\{i7} HORIZONTAL: "; HOFFS48K; "  ": PRINT
+	END IF
+	IF (model=1) THEN
+		PRINT "    \{p7}\{i0}Q\{p0}\{i7}-\{p7}\{i0}A\{p0}\{i7} VERTICAL: "; VOFFS128K; "  ": PRINT
+		PRINT "    \{p7}\{i0}O\{p0}\{i7}-\{p7}\{i0}P\{p0}\{i7} HORIZONTAL: "; HOFFS128K; "  ": PRINT
+	END IF
+	IF (model=2) THEN
+		PRINT "    \{p7}\{i0}Q\{p0}\{i7}-\{p7}\{i0}A\{p0}\{i7} VERTICAL: "; VOFFS128K; "  ": PRINT
+		PRINT "    \{p7}\{i0}O\{p0}\{i7}-\{p7}\{i0}P\{p0}\{i7} HORIZONTAL: "; HOFFS128K; "  ": PRINT
+	END IF
+
+	PRINT "    \{p7}\{i0}B\{p0}\{i7} BACK"
+	PRINT
+	PRINT "    "; PAPER 5; INK 0; " Reg #80 [ "; BinaryStr(HOFFS48K) ; " ] "
+	PRINT "    "; PAPER 5; INK 0; " Reg #81 [ "; BinaryStr(VOFFS48K) ; " ] "
+	PRINT "    "; PAPER 5; INK 0; " Reg #82 [ "; BinaryStr(HOFFS128K) ; " ] "
+	PRINT "    "; PAPER 5; INK 0; " Reg #83 [ "; BinaryStr(VOFFS128K) ; " ] "
+	PRINT "    "; PAPER 5; INK 0; " Reg #84 [ "; BinaryStr(HOFFSPEN) ; " ] "
+	PRINT "    "; PAPER 5; INK 0; " Reg #85 [ "; BinaryStr(VOFFSPEN) ; " ] "
+
+	waitkeyScreen:
+	LET a$ = inkey$()
+	'Toggle model
+
+
+	IF a$ = "m" THEN 
+		LET model = model + 1
+		IF model = 3 THEN LET model = 0: END IF
+		GO TO screenmenu
+    END IF
+
+    'Down
+	IF a$ = "a" THEN 
+		IF (model=0) THEN LET VOFFS48K = VOFFS48K + 1 : setZXUnoReg($81, VOFFS48K) : END IF
+		IF (model=1) THEN LET VOFFS128K = VOFFS128K + 1 : setZXUnoReg($83, VOFFS128K) : END IF
+		IF (model=2) THEN LET VOFFSPEN = VOFFSPEN + 1 : setZXUnoReg($85, VOFFSPEN) : END IF
+        GO TO screenmenu
+    END IF
+
+    'Up
+	IF a$ = "q" THEN 
+		IF (model=0) THEN LET VOFFS48K = VOFFS48K - 1 : setZXUnoReg($81, VOFFS48K) : END IF
+		IF (model=1) THEN LET VOFFS128K = VOFFS128K - 1 : setZXUnoReg($83, VOFFS128K) : END IF
+		IF (model=2) THEN LET VOFFSPEN = VOFFSPEN - 1 : setZXUnoReg($85, VOFFSPEN) : END IF
+        GO TO screenmenu
+    END IF
+
+    'Left
+	IF a$ = "o" THEN 
+		IF (model=0) THEN LET HOFFS48K = HOFFS48K - 1 : setZXUnoReg($80, HOFFS48K) : END IF
+		IF (model=1) THEN LET HOFFS128K = HOFFS128K - 1 : setZXUnoReg($82, HOFFS128K) : END IF
+		IF (model=2) THEN LET HOFFSPEN = HOFFSPEN - 1 : setZXUnoReg($84, HOFFSPEN) : END IF
+        GO TO screenmenu
+    END IF
+
+
+
+    'Right
+	IF a$ = "p" THEN 
+		IF (model=0) THEN LET HOFFS48K = HOFFS48K + 1 : setZXUnoReg($80, HOFFS48K) : END IF
+		IF (model=1) THEN LET HOFFS128K = HOFFS128K + 1 : setZXUnoReg($82, HOFFS128K) : END IF
+		IF (model=2) THEN LET HOFFSPEN = HOFFSPEN + 1 : setZXUnoReg($84, HOFFSPEN) : END IF
+        GO TO screenmenu
+    END IF
+
+
+	IF a$ = "b" THEN LET a$ = "" : RETURN: END IF
+	GO TO waitkeyScreen
+END SUB  
+
+'******************************************************************************
 '***************************          TURBO         ***************************
 '******************************************************************************
 
 
-SUB TurboMenu()
+SUB TurboMenu(version as UByte)
 	CLS
 	DIM SCANDBLCTRL, TURBO, FREQ, ENSCAN, VGA, ULATIMINGAUX as UByte
 	turbomenu:
 	header(): PRINT:PRINT:PRINT
 	LET SCANDBLCTRL = getZXUnoReg($0b)
 	LET TURBO = (SCANDBLCTRL bAND 11000000b) >> 6
+	LET COPT = (SCANDBLCTRL bAND 00100000b) >> 5
 	LET FREQ = (SCANDBLCTRL bAND 00011100b) >> 2
 	LET ENSCAN = (SCANDBLCTRL bAND 00000010b) >> 1
 	LET VGA = SCANDBLCTRL bAND 00000001b 
@@ -254,8 +365,13 @@ SUB TurboMenu()
 	
 	PRINT
 	PRINT "    \{p7}\{i0}T\{p0}\{i7} TURBO: "; turboDesc(TURBO): PRINT
-	PRINT "    \{p7}\{i0}F\{p0}\{i7} MASTER FREQ: "; freqDesc(FREQ); " Hz": PRINT
-	PRINT "      VERT   FREQ: "; freqDescVert(FREQ, ULATIMINGAUX); " Hz": PRINT
+	PRINT "    \{p7}\{i0}F\{p0}\{i7} MASTER FREQ: "; freqDesc(FREQ);: PRINT
+	IF (version = 22) THEN
+		PRINT "      VERT   FREQ: "; freqDescVert22(FREQ, ULATIMINGAUX): PRINT
+    ELSE
+		PRINT "      VERT   FREQ: "; freqDescVert23(FREQ): PRINT
+    END IF		
+	IF (version <> 22) PRINT "    \{p7}\{i0}C\{p0}\{i7} COPT:  "; coptDESC(COPT): PRINT : END IF
 	PRINT "    \{p7}\{i0}E\{p0}\{i7} ENSCAN: "; onOff(ENSCAN): PRINT
 	PRINT "    \{p7}\{i0}V\{p0}\{i7} VGA: "; onOff(VGA): PRINT
 	PRINT "    \{p7}\{i0}B\{p0}\{i7} BACK"
@@ -268,28 +384,35 @@ SUB TurboMenu()
 	IF a$ = "t" THEN 
 		LET TURBO = TURBO + 1
 		IF TURBO = 3 THEN LET TURBO = 0: END IF
-		SCANDBLCTRL = (TURBO << 6) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
+		SCANDBLCTRL = (TURBO << 6) bOR (COPT<<5) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
         setZXUnoReg($0B,SCANDBLCTRL): PAUSE 10: GO TO turbomenu
     END IF
     'Change FREQ
 	IF a$ = "f" THEN 
 		LET FREQ = FREQ + 1
 		IF FREQ = 8 THEN LET FREQ = 0: END IF
-		SCANDBLCTRL = (TURBO << 6) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
+		SCANDBLCTRL = (TURBO << 6) bOR (COPT<<5) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
         setZXUnoReg($0B,SCANDBLCTRL): PAUSE 10:  GO TO turbomenu
+    END IF
+    'Change COPT'
+    IF a$ = "c" THEN
+    	LET COPT = COPT + 1
+    	IF COPT = 2 THEN LET COPT=0: END IF
+    	SCANDBLCTRL = (TURBO << 6) bOR (COPT<<5) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
+    	setZXUnoReg($0B,SCANDBLCTRL): PAUSE 10: GO TO turbomenu
     END IF
 	'Change ENSCAN
 	IF a$ = "e" THEN 
 		LET ENSCAN = ENSCAN + 1
 		IF ENSCAN = 2 THEN LET ENSCAN = 0: END IF
-		SCANDBLCTRL = (TURBO << 6) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
+		SCANDBLCTRL = (TURBO << 6) bOR (COPT<<5) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
         setZXUnoReg($0B,SCANDBLCTRL): PAUSE 10: GO TO turbomenu
     END IF
 	'Change VGA
 	IF a$ = "v" THEN 
 		LET VGA = VGA + 1
 		IF VGA = 2 THEN LET VGA = 0: END IF
-		SCANDBLCTRL = (TURBO << 6) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
+		SCANDBLCTRL = (TURBO << 6) bOR (COPT<<5) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
         setZXUnoReg($0B,SCANDBLCTRL): GO TO turbomenu
     END IF
 	IF a$ = "b" THEN LET a$ = "" : RETURN: END IF
@@ -418,21 +541,35 @@ END SUB
 '***************************          MAIN          ***************************
 '******************************************************************************
 mainmenu:
+DIM coreversion as UByte
 PAPER 0: BORDER 5: INK 7: BRIGHT 1: CLS
 header()
+LET c$ = getCOREID()
+LET coreversion = 22
+LET v$ = c$(1 to 2)
+IF (v$ = "23") THEN coreversion=23 : END IF
+
 PRINT:PRINT
-PRINT "      \{p7}\{i0}J\{p0}\{i7} JOYSTICK SETTINGS": PRINT
-PRINT "      \{p7}\{i0}T\{p0}\{i7} TURBO & VGA SETTINGS": PRINT
+PRINT "      \{p7}\{i0}J\{p0}\{i7} JOYSTICK": PRINT
+PRINT "      \{p7}\{i0}T\{p0}\{i7} TURBO, VGA & TIMINGS": PRINT
+IF (coreversion <> 22) THEN PRINT "      \{p7}\{i0}S\{p0}\{i7} SCREEN ALIGNMENT": PRINT : END IF
 PRINT "      \{p7}\{i0}H\{p0}\{i7} HARDWARE SETTINGS": PRINT
 PRINT "      \{p7}\{i0}R\{p0}\{i7} RESET": PRINT
 PRINT "      \{p7}\{i0}E\{p0}\{i7} EXIT"
-PRINT AT 21,0; INK 7; BRIGHT 0; " CoreID: "; getCOREID()
+LET c$ = getCOREID()
+PRINT AT 21,0; INK 7; BRIGHT 0; " CoreID: "; c$
+LET coreversion = 22
+LET v$ = c$(1 to 2)
+IF (v$ = "23") THEN coreversion=23 : END IF
+PRINT AT 21,0; INK 7; BRIGHT 0; " CoreID: "; c$
+
 
 waitkey:
 LET a$ = getKey()
 IF a$ = "j" THEN JoystickMenu(): GOTO mainmenu: END IF
-IF a$ = "t" THEN TurboMenu():goto mainmenu: END IF
+IF a$ = "t" THEN TurboMenu(coreversion):goto mainmenu: END IF
 IF a$ = "h" THEN HardwareMenu():goto mainmenu: END IF
+IF a$ = "s" THEN ScreenAlignmentMenu():goto mainmenu: END IF
 IF (a$ <> "e") and (a$<>"r") THEN GO TO waitkey: END IF
 
 IF (a$="r") THEN RANDOMIZE USR 0: END IF
