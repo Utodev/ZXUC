@@ -1,35 +1,30 @@
 # ZXCU
-A menu guided setup utility for ZX-Uno and settings set configurator. Allows to change several settings in the ZX-Uno on the fly, without reseting, and allows saving those sets and restore them later.
+A menu-guided setup utility for ZX-Uno and settings set configurator.
+Provides methods to change several ZX-Uno settings on the fly, without reseting, and allows those settings to be saved and restored.
 
-Compile options
-===============
+## Build instructions
+* Compile the BAS file with [ZX-Basic](http://www.boriel.com/wiki/en/index.php/ZXBasic) (requires Python to run):
 
-BAS file to be compiled with ZX-Basic (http://www.boriel.com/wiki/en/index.php/ZXBasic)
+  `python zxbc.py ZXUC.BAS -O9 -S 45000`
 
-python zxbc.py  ZXUC.BAS -O9 -S 45000
+* Compile the ASM files with [Pasmo](http://pasmo.speccy.org/):
 
-ASM files to be compiled with pasmo:
+  `pasmo zxuc.asm ZXUC`
+  `pasmo zxucsave.asm ZXUCSAVE`
 
-pasmo zxuc.asm ZXUC
-pasmo zxucsave.asm ZXUCSAVE
+* Copy the `ZXUC`, `ZXUCSAVE` and `ZXUC.BIN` files in the `/BIN` folder of your SD card. 
 
-Put all ZXUC, ZXUCSAVE and ZXUC.BIN files at you SD card /BIN folder 
+## Usage
+* Launch the GUI:
 
-Usage
-=====
-- You can call the GUI by typing
+  `.zxuc`
 
-.zxuc
+* Save the current settings to the named file (normal filename restrictions apply):
 
-- You can save the current settings by typing 
+  `.zxucsave filename`
 
-.zxucsave xxxxxxxx
+* Restore previously saved settings:
 
-where xxxxxxxx is a string with up to 8 characters valid for a file name.
+  `.zxuc filename`
 
-- You can restore  previously saved settings typing:
-
-.zxuc xxxxxxxx
-
-- Setting files are stored at /SYS/CONFIG/ZXUCCFG folder.
-
+Settings files are stored in the `/SYS/CONFIG/ZXUCCFG` folder.
