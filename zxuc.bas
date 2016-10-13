@@ -1,13 +1,12 @@
 'ZXUC (C) Uto 2016
 
-
 '******************************************************************************
 '***************************          AUX           ***************************
 '******************************************************************************
 
 SUB header()
 	PRINT AT 0,0;
-	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.2 (C) 2016 Uto "; PAPER 1;"                                ";
+	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.3 (C) 2016 Uto "; PAPER 1;"                                ";
 END SUB
 
 FUNCTION getKey() as String
@@ -258,8 +257,9 @@ END SUB
 
 SUB ScreenAlignmentMenu()
 	CLS
-	DIM model, HOFFS48K, VOFFS48K, HOFFS128K, VOFFS128K, HOFFSPEN, VOFFSPEN as UByte
-	LET model = 0
+	DIM model, HOFFS48K, VOFFS48K, HOFFS128K, VOFFS128K, HOFFSPEN, VOFFSPEN, MASTERCONF as UByte
+	LET MASTERCONF =  getZXUnoReg($00)
+	LET model = getULATiming(MASTERCONF)
 	screenmenu:
 	header(): PRINT:PRINT:PRINT
 	LET HOFFS48K = getZXUnoReg($80) 
@@ -365,11 +365,11 @@ SUB TurboMenu(version as UByte)
 	
 	PRINT
 	PRINT "    \{p7}\{i0}T\{p0}\{i7} TURBO: "; turboDesc(TURBO): PRINT
-	PRINT "    \{p7}\{i0}F\{p0}\{i7} MASTER FREQ: "; freqDesc(FREQ);: PRINT
+	PRINT "    \{p7}\{i0}O\{p0}\{i7}-\{p7}\{i0}P\{p0}\{i7} MASTER FREQ: "; freqDesc(FREQ);: PRINT
 	IF (version = 22) THEN
-		PRINT "      VERT   FREQ: "; freqDescVert22(FREQ, ULATIMINGAUX): PRINT
+		PRINT "        VERT   FREQ: "; freqDescVert22(FREQ, ULATIMINGAUX): PRINT
     ELSE
-		PRINT "      VERT   FREQ: "; freqDescVert23(FREQ): PRINT
+		PRINT "        VERT   FREQ: "; freqDescVert23(FREQ): PRINT
     END IF		
 	IF (version <> 22) PRINT "    \{p7}\{i0}C\{p0}\{i7} COPT:  "; coptDESC(COPT): PRINT : END IF
 	PRINT "    \{p7}\{i0}E\{p0}\{i7} ENSCAN: "; onOff(ENSCAN): PRINT
@@ -388,9 +388,15 @@ SUB TurboMenu(version as UByte)
         setZXUnoReg($0B,SCANDBLCTRL): PAUSE 10: GO TO turbomenu
     END IF
     'Change FREQ
-	IF a$ = "f" THEN 
+	IF a$ = "p" THEN 
 		LET FREQ = FREQ + 1
 		IF FREQ = 8 THEN LET FREQ = 0: END IF
+		SCANDBLCTRL = (TURBO << 6) bOR (COPT<<5) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
+        setZXUnoReg($0B,SCANDBLCTRL): PAUSE 10:  GO TO turbomenu
+    END IF
+	IF a$ = "o" THEN 
+		LET FREQ = FREQ - 1
+		IF FREQ = -1 THEN LET FREQ = 7: END IF
 		SCANDBLCTRL = (TURBO << 6) bOR (COPT<<5) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
         setZXUnoReg($0B,SCANDBLCTRL): PAUSE 10:  GO TO turbomenu
     END IF
@@ -533,7 +539,6 @@ SUB HardwareMenu()
 	IF a$ = "b" THEN LET a$ = "" : RETURN: END IF
 		GO TO waitkeyHardware
 END SUB  
-
 
 
 
