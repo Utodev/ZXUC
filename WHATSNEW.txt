@@ -1,0 +1,8 @@
+Version 0.3 - Oct 2016
+======================
+- Now it's possible to change refresh frequency 0-7 upwards and backwards
+- Screen Alignment screen defaults to current ULA timing selection. That is, if your current ULA timing is  for instance Pentagon, it will default to Pentagon alignment.
+- Fixed a bug with .ZXUC that failed when another dot command had been called before.
+- Added .ZXUCSAVE dot command to allow saving settings, they are saved at /SYS/CONFIG/ZXUCCFG folder. To save the xxxx setting use .ZXUCSAVE xxxx
+- Added option to .ZXUC to load a previously saved set of settings: .ZXUC xxxx. Calling .ZXUC without pararamenters will open the GUI
+
