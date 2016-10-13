@@ -1,52 +1,146 @@
-FA_READ   equ   $01
-FA_APPEND equ $06
-M_GETSETDRV   equ   $89
-F_OPEN   equ   $9a
-F_CLOSE   equ   $9b
-F_READ   equ   $9d
-F_WRITE equ $9e
+;ZXUC (C) Uto 2016
 
+; --- ESXDOS FUNCTIONS
+      M_GETSETDRV   equ   $89
+      F_OPEN   equ   $9a
+      F_CLOSE   equ   $9b
+      F_READ   equ   $9d
+      F_WRITE equ $9e
+; --- FILE OPEN MODES
+      FA_READ   equ   $01
+; --- ZXUNO details
+      zxuno_port equ 64571
+      REGISTERS_TO_LOAD_COUNT equ FHandle - RegistersToLoad
 
 org $2000
 
-Main: ; Set default disk
-      XOR a
-      RST $08
+Main: 
+
+;---- Check if params
+
+      ld a,h
+      or l
+      jr nz, loadConfig
+
+; ----------------------------
+; +++ NO PARAMS - OPEN GUI +++
+; ----------------------------
+
+; --- Set default disk    
+      xor a
+      rst $08
       db M_GETSETDRV
-      RET C
+      ret c
+; --- Open ZXCU.BIN file      
       ld b, FA_READ   
       ld hl, zxucbinfile   
       rst $08
       db F_OPEN      
-      RET C
+      ret c
+; --- Load ZXCU.BIN at address 45000
       ld (FHandle),a
       ld HL, 45000
       ld bc, 16384   ; bc=longitud del fichero, en exceso, por asegurar
       ld a,(FHandle)
       rst $08
       db F_READ      ; Leer archivo     
-      RET C
+      ret c
+; --- Close file      
       ld a,(FHandle)
       rst $08
       db F_CLOSE
-      RET C
-      RST $18
+      ret c
+; --- Jump to address 45000 forcing exit from ESXDOS ROM so standard ROM is avaliable
+      rst $18
       dw 45000
-      RET
-Print:
-      pop hl
-      db $3e
-Print1:   
-      rst $10
-      ld a, (hl)
-      inc hl
-      or a
-      jr nz, Print1
-      jp (hl)
+      ret
 
+; --------------------------------------------------
+; +++ LOAD A CONFIGURATION FILE - DON'T OPEN GUI +++
+; --------------------------------------------------
+
+loadConfig:
+; --- Copy param to filename position
+      ld b, 8
+      ld de, cfgfile 
+filenameLoop:      
+      ld a, (hl)
+      cp ':'
+      jr z, addZero  ; exit if ':' found
+      cp $0D
+      jr z, addZero  ; exit if carriage return found
+      ld (de), a
+      dec b
+      jp pe, loadFile; exit if already 8 characters
+      inc de
+      inc hl
+      jp filenameLoop
+addZero:   ; name shorter than 8 characters, set zero for ASCIIZ string
+      xor a
+      ld (de),a
+loadFile: 
+; --- Set default disk    
+      xor a
+      rst $08
+      db M_GETSETDRV
+      ret c
+; --- Open cfg file      
+      ld hl, cfgpath   
+      ld b, FA_READ   
+      rst $08
+      db F_OPEN      
+      ret C
+; --- Load data at cfgbuffer
+      ld (FHandle),a
+      ld hl, cfgbuffer
+      ld bc, REGISTERS_TO_LOAD_COUNT
+      rst $08
+      db F_READ      ; Leer archivo     
+      ret C
+; --- Close file      
+      ld a,(FHandle)
+      rst $08
+      db F_CLOSE
+      ret c
+
+; --- Write config to ZX-Uno registers
+      ld hl, cfgbuffer
+      ld bc, zxuno_port
+      ld a, REGISTERS_TO_LOAD_COUNT
+      ld de, RegistersToLoad
+setRegsLoop:
+      push af                        ; Preserve record count
+      ld a, (de)                     ; Get first record to save  
+      inc de                         ; Point to next one in the list
+      out (c), a                     ; Select record
+      inc b                          ; Point to ZX-Uno data port (non casually, 256 bytes above the other one)
+      ld a, (hl)
+      out (c), a
+      inc hl                         ; Move pointer to buffer as well
+      dec b                          ; Point again to ZX-Un select port   
+      pop af                         ; Restore record count
+      dec a                           
+      or a
+      ret z                          ; Dec count and if zero, return
+      jr setRegsLoop
+      ret
+
+
+
+
+;--- Variables
+; IMPORTANT: NEVER EVER CHANGE THE ORDER OF THESE RECORDS, IF YOU HAVE TO ADD NEW ONE, ADD IT AS LAST RECORD INSTEAD OF INSERTING IT TO KEEP 
+;            NUMERIC ORDER. OTHERWISE, WHEN LOADING OLD SAVED CONFIGS VALUES FOR SOME ZX-UNO RECORDS WILL BE LOADED INTO DIFFERENT ONES
+RegistersToLoad: db $00, $06, $0B,$0E, $0F,$80, $81, $82, $83, $84, $85
 FHandle: db 0
 zxucbinfile: db "/BIN/ZXUC.BIN"
-db 0
+             db 0
+cfgpath: db "/SYS/CONFIG/ZXUCCFG/"
+cfgfile: ds 8
+         db 0   
+cfgbuffer: ds 256
 
 
-END $2000
+END $2000      
+
+    
