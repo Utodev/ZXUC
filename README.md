@@ -1,5 +1,6 @@
 # ZXCU
-A menu guided setup utility for ZX-Uno and settings set configurator. Allows to change several settings in the ZX-Uno on the fly, without reseting, and allows saving those sets and restore them later.
+
+A menu guided setup utility for ZX-Uno and settings set configurator. Allows to change several settings in the ZX-Uno on the fly, without reseting, and allows saving different profiles to restore them later.
 
 Compile options
 ===============
@@ -21,15 +22,15 @@ Usage
 
 .zxuc
 
-- You can save the current settings by typing 
+- You can save the current profile by typing 
 
 .zxucsave xxxxxxxx
 
 where xxxxxxxx is a string with up to 8 characters valid for a file name.
 
-- You can restore  previously saved settings typing:
+- You can restore  previously saved profile typing:
 
 .zxuc xxxxxxxx
 
-- Setting files are stored at /SYS/CONFIG/ZXUCCFG folder.
+- Profile files are stored at /SYS/CONFIG/ZXUCCFG folder.
 
