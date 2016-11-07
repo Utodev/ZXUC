@@ -6,7 +6,7 @@
 
 SUB header()
 	PRINT AT 0,0;
-	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.3 (C) 2016 Uto "; PAPER 1;"                                ";
+	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.4 (C) 2016 Uto "; PAPER 1;"                                ";
 END SUB
 
 FUNCTION getKey() as String
@@ -550,9 +550,9 @@ DIM coreversion as UByte
 PAPER 0: BORDER 5: INK 7: BRIGHT 1: CLS
 header()
 LET c$ = getCOREID()
-LET coreversion = 22
+LET coreversion = 23
 LET v$ = c$(1 to 2)
-IF (v$ = "23") THEN coreversion=23 : END IF
+IF (v$ = "22") THEN coreversion=22 : END IF
 
 PRINT:PRINT
 PRINT "      \{p7}\{i0}J\{p0}\{i7} JOYSTICK": PRINT
