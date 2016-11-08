@@ -1,3 +1,8 @@
+Version 0.4 - Nov 2016
+======================
+-Patched a bug that prevented screen alignment options appear on core version T24
+
+
 Version 0.3 - Oct 2016
 ======================
 - Now it's possible to change refresh frequency 0-7 upwards and backwards
