@@ -162,6 +162,5 @@ cfgfile: db 0
 cfgbuffer: ds 256
 
 
-END $2000      
 
     

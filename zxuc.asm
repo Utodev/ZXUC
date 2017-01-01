@@ -141,6 +141,5 @@ cfgfile: ds 8
 cfgbuffer: ds 256
 
 
-END $2000      
 
     
