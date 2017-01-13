@@ -137,8 +137,8 @@ FUNCTION freqDesc(value as UByte) AS String
 END FUNCTION
 
 FUNCTION freqDescVert(value as UByte) AS String
-	 IF value = 0 THEN RETURN "0-50 48K/Pen": END IF
-	 IF value = 1 THEN RETURN "1-50 128K   ": END IF
+	 IF value = 0 THEN RETURN "0-50 48/Pen": END IF
+	 IF value = 1 THEN RETURN "1-50 128K  ": END IF
 	 IF value = 2 THEN RETURN "2-52       ": END IF
 	 IF value = 3 THEN RETURN "3-53       ": END IF
 	 IF value = 4 THEN RETURN "4-55       ": END IF
