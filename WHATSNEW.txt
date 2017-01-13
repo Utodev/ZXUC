@@ -1,3 +1,8 @@
+Version 0.5 - Jan 2017
+======================
+- Core version control has been removed, now all options will appear for all core versions, those options not supported by current core won't work.
+- As a consequence, the bug that was preventing the COPT version to appear on core T24 won't prevent it anymore.
+
 Version 0.4 - Nov 2016
 ======================
 -Patched a bug that prevented screen alignment options appear on core version T24
