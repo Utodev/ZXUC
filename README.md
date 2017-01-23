@@ -14,11 +14,12 @@ ASM files to be compiled with pasmo:
 pasmo zxuc.asm ZXUC
 pasmo zxucsave.asm ZXUCSAVE
 
-Put all ZXUC, ZXUCSAVE and ZXUC.BIN files at you SD card /BIN folder 
+ESXDOS: Put ZXUC, ZXUCSAVE and ZXUC.BIN files at you SD card /BIN folder 
+UnoDOS: Put ZXUC, ZXUCSAVE and ZXUC.BIN files at you SD card /CMD folder 
 
 Usage
 =====
-- You can call the GUI by typing
+- You can open the GUI by typing
 
 .zxuc
 

@@ -6,7 +6,7 @@
 
 SUB header()
 	PRINT AT 0,0;
-	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.5 (C) 2016 Uto "; PAPER 1;"                                ";
+	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.6 (C) 2016 Uto "; PAPER 1;"                                ";
 END SUB
 
 FUNCTION getKey() as String

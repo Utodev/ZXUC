@@ -1,3 +1,7 @@
+Version 0.6 - Jan 2017
+======================
+- Added Uno DOS compatibility
+
 Version 0.5 - Jan 2017
 ======================
 - Core version control has been removed, now all options will appear for all core versions, those options not supported by current core won't work.

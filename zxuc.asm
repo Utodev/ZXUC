@@ -31,14 +31,22 @@ Main:
       rst $08
       db M_GETSETDRV
       ret c
-; --- Open ZXCU.BIN file      
+      ld (UnoD +1), A ; Save current drive just in case UnoDOs is being used
+; --- Open ZXCU.BIN file for ESXDOS
       ld b, FA_READ   
       ld hl, zxucbinfile   
       rst $08
       db F_OPEN      
+      jr nc, load
+; --- Open ZXCU.BIN file for Uno DOS
+UnoD  ld a, 0 
+      ld b, FA_READ   
+      ld hl, zxuccmdfile   
+      rst $08
+      db F_OPEN      
       ret c
 ; --- Load ZXCU.BIN at address 45000
-      ld (FHandle),a
+load  ld (FHandle),a
       ld HL, 45000
       ld bc, 16384   ; bc=longitud del fichero, en exceso, por asegurar
       ld a,(FHandle)
@@ -134,6 +142,8 @@ setRegsLoop:
 RegistersToLoad: db $00, $06, $0B,$0E, $0F,$80, $81, $82, $83, $84, $85
 FHandle: db 0
 zxucbinfile: db "/BIN/ZXUC.BIN"
+             db 0
+zxuccmdfile: db "/CMD/ZXUC.BIN"
              db 0
 cfgpath: db "/SYS/CONFIG/ZXUCCFG/"
 cfgfile: ds 8
