@@ -44,7 +44,13 @@ UnoD  ld a, 0
       ld hl, zxuccmdfile   
       rst $08
       db F_OPEN      
-      ret c
+      jr nc, load
+UnoD2 ld a, 0 
+      ld b, FA_READ   
+      ld hl, zxucappfile
+      rst $08
+      db F_OPEN      
+      jr nc, load
 ; --- Load ZXCU.BIN at address 45000
 load  ld (FHandle),a
       ld HL, 45000
@@ -144,6 +150,8 @@ FHandle: db 0
 zxucbinfile: db "/BIN/ZXUC.BIN"
              db 0
 zxuccmdfile: db "/CMD/ZXUC.BIN"
+             db 0
+zxucappfile: db "/APP/ZXUC.BIN"
              db 0
 cfgpath: db "/SYS/CONFIG/ZXUCCFG/"
 cfgfile: ds 8
