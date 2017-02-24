@@ -1,6 +1,5 @@
 # ZXCU
-A menu-guided setup utility for ZX-Uno and settings set configurator.
-Provides methods to change several ZX-Uno settings on the fly, without reseting, and allows those settings to be saved and restored.
+A menu guided setup utility for ZX-Uno and settings set configurator. Allows to change several settings in the ZX-Uno on the fly, without reseting, and allows saving different profiles to restore them later.
 
 ## Build instructions
 * Compile the BAS file with [ZX-Basic](http://www.boriel.com/wiki/en/index.php/ZXBasic) (requires Python to run):
@@ -15,16 +14,25 @@ Provides methods to change several ZX-Uno settings on the fly, without reseting,
 * Copy the `ZXUC`, `ZXUCSAVE` and `ZXUC.BIN` files in the `/BIN` folder of your SD card. 
 
 ## Usage
-* Launch the GUI:
 
-  `.zxuc`
+ESXDOS: Put ZXUC, ZXUCSAVE and ZXUC.BIN files at you SD card /BIN folder 
+UnoDOS: Put ZXUC, ZXUCSAVE and ZXUC.BIN files at you SD card /CMD folder 
+
+* Open the GUI:
+
+.zxuc
 
 * Save the current settings to the named file (normal filename restrictions apply):
 
-  `.zxucsave filename`
+.zxucsave filename
 
 * Restore previously saved settings:
 
-  `.zxuc filename`
+ You can restore  previously saved profile typing:
 
-Settings files are stored in the `/SYS/CONFIG/ZXUCCFG` folder.
+.zxuc xxxxxxxx
+
+Profile files are stored at /SYS/CONFIG/ZXUCCFG folder.
+
+
+

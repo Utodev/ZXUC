@@ -1,12 +1,13 @@
-'ZXUC (C) Uto 2016
+'ZXUC (C) Uto 2016-2017
 
 '******************************************************************************
 '***************************          AUX           ***************************
 '******************************************************************************
 
+
 SUB header()
 	PRINT AT 0,0;
-	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.3 (C) 2016 Uto "; PAPER 1;"                                ";
+	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.7 (C) 2016 Uto "; PAPER 1;"                                ";
 END SUB
 
 FUNCTION getKey() as String
@@ -82,6 +83,7 @@ FUNCTION BinaryStr(value as UByte) AS string
 	     LET t$="0"+t$
 	  END IF
   NEXT i
+  LET t$ = str$(value) + " " + t$
   RETURN t$
 END FUNCTION
 
@@ -135,55 +137,24 @@ FUNCTION freqDesc(value as UByte) AS String
   RETURN STR$(value)
 END FUNCTION
 
-FUNCTION freqDescVert23(value as UByte) AS String
-	 IF value = 0 THEN RETURN "50 48K/Pen": END IF
-	 IF value = 1 THEN RETURN "50 128K   ": END IF
-	 IF value = 2 THEN RETURN "52       ": END IF
-	 IF value = 3 THEN RETURN "53       ": END IF
-	 IF value = 4 THEN RETURN "55       ": END IF
-	 IF value = 5 THEN RETURN "57       ": END IF
-	 IF value = 6 THEN RETURN "59       ": END IF
-	 IF value = 7 THEN RETURN "60       ": END IF
+FUNCTION freqDescVert(value as UByte) AS String
+	 IF value = 0 THEN RETURN "0-50 48/Pen": END IF
+	 IF value = 1 THEN RETURN "1-50 128K  ": END IF
+	 IF value = 2 THEN RETURN "2-52       ": END IF
+	 IF value = 3 THEN RETURN "3-53       ": END IF
+	 IF value = 4 THEN RETURN "4-55       ": END IF
+	 IF value = 5 THEN RETURN "5-57       ": END IF
+	 IF value = 6 THEN RETURN "6-59       ": END IF
+	 IF value = 7 THEN RETURN "7-60       ": END IF
 END	FUNCTION
 
+FUNCTION StereoDescription(value as UByte) AS String
+	 IF value = 0 THEN RETURN "Silence    ": END IF
+	 IF value = 1 THEN RETURN "Right      ": END IF
+	 IF value = 2 THEN RETURN "Left       ": END IF
+	 IF value = 3 THEN RETURN "Both       ": END IF
+END	FUNCTION
 
-FUNCTION freqDescVert22(value, timing as UByte) AS String
-	IF timing = 0 THEN
-		 IF value = 0 THEN RETURN "50.303": END IF
-		 IF value = 1 THEN RETURN "51.102": END IF
-		 IF value = 2 THEN RETURN "53.657": END IF
-		 IF value = 3 THEN RETURN "55.893": END IF
-		 IF value = 4 THEN RETURN "57.490": END IF
-		 IF value = 5 THEN RETURN "59.619": END IF
-		 IF value = 6 THEN RETURN "61.912": END IF
-		 IF value = 7 THEN RETURN "63.878": END IF
-	END IF
-
-	IF timing = 1 THEN
-		 IF value = 0 THEN RETURN "49.580": END IF
-		 IF value = 1 THEN RETURN "50.366": END IF
-		 IF value = 2 THEN RETURN "52.885": END IF
-		 IF value = 3 THEN RETURN "55.089": END IF
-		 IF value = 4 THEN RETURN "56.663": END IF
-		 IF value = 5 THEN RETURN "58.761": END IF
-		 IF value = 6 THEN RETURN "61.021": END IF
-		 IF value = 7 THEN RETURN "62.958": END IF
-	END IF
-
-	IF timing = 2 THEN
-		 IF value = 0 THEN RETURN "49.046": END IF
-		 IF value = 1 THEN RETURN "49.824": END IF
-		 IF value = 2 THEN RETURN "52.316": END IF
-		 IF value = 3 THEN RETURN "54.496": END IF
-		 IF value = 4 THEN RETURN "56.053": END IF
-		 IF value = 5 THEN RETURN "58.128": END IF
-		 IF value = 6 THEN RETURN "60.364": END IF
-		 IF value = 7 THEN RETURN "62.280": END IF
-	END IF
-	
-	RETURN "??.???"
-
-END FUNCTION
 
 
 FUNCTION onOff(value as UByte) AS String
@@ -212,7 +183,6 @@ SUB JoystickMenu()
 	PRINT "    \{p7}\{i0}2\{p0}\{i7} DB9 JOY: "; joyType(JoyDB9): PRINT
 	PRINT "    \{p7}\{i0}3\{p0}\{i7} KEY Autofire: "; onOff(JoyKeyAutoFire): PRINT
 	PRINT "    \{p7}\{i0}4\{p0}\{i7} DB9 Autofire: "; onOff(JoyDB9AutoFire): PRINT
-	PRINT "    \{p7}\{i0}B\{p0}\{i7} BACK"
 	PRINT
 	PRINT "    "; PAPER 5; INK 0; " Reg #06 [ "; BinaryStr(JOYCONF) ; " ] "
 
@@ -246,12 +216,87 @@ SUB JoystickMenu()
 		JOYCONF = (JoyDB9AutoFire << 7) bOR (JoyDB9 << 4) bOR (JoyKeyAutoFire << 3) bOR JoyKey
         setZXUnoReg(6,JOYCONF): GO TO joymenu
     END IF
-	IF a$ = "b" THEN LET a$ = "" : RETURN: END IF
+	IF a$ = " " THEN LET a$ = "" : RETURN: END IF
 		GO TO waitkeyJoystick
 END SUB  
 
+
 '******************************************************************************
-'***************************        JOYSTICK        ***************************
+'***************************        SOUND           ***************************
+'******************************************************************************
+
+
+SUB SoundMenu()
+	CLS
+	DIM STEREO, CHANNELA, CHANNELB, CHANNELC, CHANNELBEEPERDRUM as UByte
+	LET STEREO =  IN $F7
+	soundmenu:
+	header(): PRINT:PRINT:PRINT
+	LET CHANNELBEEPERDRUM = STEREO bAND 00000011b
+	LET CHANNELC = STEREO bAND 00001100b >> 2
+	LET CHANNELB = STEREO bAND 00110000b >> 4
+	LET CHANNELA = STEREO bAND 11000000b >> 6
+
+	
+	PRINT
+
+	PRINT "    \{p7}\{i0}A\{p0}\{i7} CHANNEL A :" ; StereoDescription(CHANNELA): PRINT
+	PRINT "    \{p7}\{i0}B\{p0}\{i7} CHANNEL B :" ; StereoDescription(CHANNELB): PRINT
+	PRINT "    \{p7}\{i0}C\{p0}\{i7} CHANNEL C :" ; StereoDescription(CHANNELC): PRINT
+	PRINT "    \{p7}\{i0}D\{p0}\{i7} BEEPER & SPECDRUM :" ; StereoDescription(CHANNELBEEPERDRUM): PRINT
+	PRINT "    \{p7}\{i0}R\{p0}\{i7} RESTORE DEFAULTS (ACB)": PRINT
+	PRINT
+	PRINT "    "; PAPER 5; INK 0; " Reg #F7 [ "; BinaryStr(STEREO) ; " ] "
+
+	waitkeySound:
+	LET a$ = inkey$()
+		
+	IF a$ = "a" THEN 
+		LET CHANNELA = CHANNELA + 1
+		IF CHANNELA = 4 THEN LET CHANNELA=0 :  END IF
+		LET STEREO = CHANNELA << 6 bOR CHANNELB << 4 bOR CHANNELC << 2 bOR CHANNELBEEPERDRUM
+		OUT $F7,STEREO: GO TO soundmenu
+    END IF
+
+
+	IF a$ = "b" THEN 
+		LET CHANNELB = CHANNELB + 1
+		IF CHANNELB = 4 THEN LET CHANNELB=0 :  END IF
+		LET STEREO = CHANNELA << 6 bOR CHANNELB << 4 bOR CHANNELC << 2 bOR CHANNELBEEPERDRUM
+		OUT $F7,STEREO: GO TO soundmenu
+    END IF
+
+
+	IF a$ = "c" THEN 
+		LET CHANNELC = CHANNELC + 1
+		IF CHANNELC = 4 THEN LET CHANNELC=0 :  END IF
+		LET STEREO = CHANNELA << 6 bOR CHANNELB << 4 bOR CHANNELC << 2 bOR CHANNELBEEPERDRUM
+		OUT $F7,STEREO: GO TO soundmenu
+    END IF
+
+
+	IF a$ = "d" THEN 
+		LET CHANNELBEEPERDRUM = CHANNELBEEPERDRUM + 1
+		IF CHANNELBEEPERDRUM = 4 THEN LET CHANNELBEEPERDRUM=0 :  END IF
+		LET STEREO = CHANNELA << 6 bOR CHANNELB << 4 bOR CHANNELC << 2 bOR CHANNELBEEPERDRUM
+		OUT $F7,STEREO: GO TO soundmenu
+    END IF
+
+
+	IF a$ = "r" THEN 
+		LET STEREO = 10011111b
+		OUT $F7,STEREO: GO TO soundmenu
+    END IF    
+
+
+	IF a$ = " " THEN LET a$ = "" : RETURN: END IF
+	GO TO waitkeySound
+END SUB  
+
+
+
+'******************************************************************************
+'***************************        SCREEN          ***************************
 '******************************************************************************
 
 
@@ -285,7 +330,6 @@ SUB ScreenAlignmentMenu()
 		PRINT "    \{p7}\{i0}O\{p0}\{i7}-\{p7}\{i0}P\{p0}\{i7} HORIZONTAL: "; HOFFS128K; "  ": PRINT
 	END IF
 
-	PRINT "    \{p7}\{i0}B\{p0}\{i7} BACK"
 	PRINT
 	PRINT "    "; PAPER 5; INK 0; " Reg #80 [ "; BinaryStr(HOFFS48K) ; " ] "
 	PRINT "    "; PAPER 5; INK 0; " Reg #81 [ "; BinaryStr(VOFFS48K) ; " ] "
@@ -340,7 +384,7 @@ SUB ScreenAlignmentMenu()
     END IF
 
 
-	IF a$ = "b" THEN LET a$ = "" : RETURN: END IF
+	IF a$ = " " THEN LET a$ = "" : RETURN: END IF
 	GO TO waitkeyScreen
 END SUB  
 
@@ -349,9 +393,9 @@ END SUB
 '******************************************************************************
 
 
-SUB TurboMenu(version as UByte)
+SUB TurboMenu()
 	CLS
-	DIM SCANDBLCTRL, TURBO, FREQ, ENSCAN, VGA, ULATIMINGAUX as UByte
+	DIM SCANDBLCTRL, TURBO, FREQ, ENSCAN, VGA as UByte
 	turbomenu:
 	header(): PRINT:PRINT:PRINT
 	LET SCANDBLCTRL = getZXUnoReg($0b)
@@ -360,21 +404,15 @@ SUB TurboMenu(version as UByte)
 	LET FREQ = (SCANDBLCTRL bAND 00011100b) >> 2
 	LET ENSCAN = (SCANDBLCTRL bAND 00000010b) >> 1
 	LET VGA = SCANDBLCTRL bAND 00000001b 
-	LET MASTERCONF = getZXUnoReg($00)
-	LET ULATIMINGAUX = getULATiming(MASTERCONF)
+	
 	
 	PRINT
 	PRINT "    \{p7}\{i0}T\{p0}\{i7} TURBO: "; turboDesc(TURBO): PRINT
 	PRINT "    \{p7}\{i0}O\{p0}\{i7}-\{p7}\{i0}P\{p0}\{i7} MASTER FREQ: "; freqDesc(FREQ);: PRINT
-	IF (version = 22) THEN
-		PRINT "        VERT   FREQ: "; freqDescVert22(FREQ, ULATIMINGAUX): PRINT
-    ELSE
-		PRINT "        VERT   FREQ: "; freqDescVert23(FREQ): PRINT
-    END IF		
-	IF (version <> 22) PRINT "    \{p7}\{i0}C\{p0}\{i7} COPT:  "; coptDESC(COPT): PRINT : END IF
+	PRINT "        VERT   FREQ: "; freqDescVert(FREQ): PRINT
+    PRINT "    \{p7}\{i0}C\{p0}\{i7} COPT:  "; coptDESC(COPT): PRINT 
 	PRINT "    \{p7}\{i0}E\{p0}\{i7} ENSCAN: "; onOff(ENSCAN): PRINT
 	PRINT "    \{p7}\{i0}V\{p0}\{i7} VGA: "; onOff(VGA): PRINT
-	PRINT "    \{p7}\{i0}B\{p0}\{i7} BACK"
 	PRINT
 	PRINT "    "; PAPER 5; INK 0; " Reg #0B [ "; BinaryStr(SCANDBLCTRL) ; " ] " 
 
@@ -421,7 +459,7 @@ SUB TurboMenu(version as UByte)
 		SCANDBLCTRL = (TURBO << 6) bOR (COPT<<5) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
         setZXUnoReg($0B,SCANDBLCTRL): GO TO turbomenu
     END IF
-	IF a$ = "b" THEN LET a$ = "" : RETURN: END IF
+	IF a$ = " " THEN LET a$ = "" : RETURN: END IF
 		GO TO waitkeyTurbo
 END SUB  
 
@@ -452,7 +490,6 @@ SUB HardwareMenu()
 	PRINT "   \{p7}\{i0}K\{p0}\{i7} Keyboard      : "; keyBoardType(bitTest(MASTERCONF,3))
 	PRINT "   \{p7}\{i0}L\{p0}\{i7} ULA Timing    : "; ULATimingValue(ULATIMING)
 
-	PRINT "   \{p7}\{i0}B\{p0}\{i7} BACK"
 	PRINT
 	PRINT "   "; PAPER 5; INK 0; " Reg #00 [ "; BinaryStr(MASTERCONF) ; " ] " 
 	PRINT "   "; PAPER 5; INK 0; " Reg #0E [ "; BinaryStr(DEVCONTROL) ; " ] " 
@@ -536,7 +573,7 @@ SUB HardwareMenu()
         setZXUnoReg($0f,DEVCTRL2): GO TO hardwaremenu
     END IF
 
-	IF a$ = "b" THEN LET a$ = "" : RETURN: END IF
+	IF a$ = " " THEN LET a$ = "" : RETURN: END IF
 		GO TO waitkeyHardware
 END SUB  
 
@@ -546,38 +583,28 @@ END SUB
 '***************************          MAIN          ***************************
 '******************************************************************************
 mainmenu:
-DIM coreversion as UByte
 PAPER 0: BORDER 5: INK 7: BRIGHT 1: CLS
 header()
 LET c$ = getCOREID()
-LET coreversion = 22
-LET v$ = c$(1 to 2)
-IF (v$ = "23") THEN coreversion=23 : END IF
 
 PRINT:PRINT
 PRINT "      \{p7}\{i0}J\{p0}\{i7} JOYSTICK": PRINT
 PRINT "      \{p7}\{i0}T\{p0}\{i7} TURBO, VGA & TIMINGS": PRINT
-IF (coreversion <> 22) THEN PRINT "      \{p7}\{i0}S\{p0}\{i7} SCREEN ALIGNMENT": PRINT : END IF
+PRINT "      \{p7}\{i0}A\{p0}\{i7} SCREEN ALIGNMENT": PRINT 
 PRINT "      \{p7}\{i0}H\{p0}\{i7} HARDWARE SETTINGS": PRINT
-PRINT "      \{p7}\{i0}R\{p0}\{i7} RESET": PRINT
-PRINT "      \{p7}\{i0}E\{p0}\{i7} EXIT"
+PRINT "      \{p7}\{i0}S\{p0}\{i7} SOUND SETTINGS": PRINT
 LET c$ = getCOREID()
-PRINT AT 21,0; INK 7; BRIGHT 0; " CoreID: "; c$
-LET coreversion = 22
-LET v$ = c$(1 to 2)
-IF (v$ = "23") THEN coreversion=23 : END IF
 PRINT AT 21,0; INK 7; BRIGHT 0; " CoreID: "; c$
 
 
 waitkey:
 LET a$ = getKey()
 IF a$ = "j" THEN JoystickMenu(): GOTO mainmenu: END IF
-IF a$ = "t" THEN TurboMenu(coreversion):goto mainmenu: END IF
+IF a$ = "t" THEN TurboMenu():goto mainmenu: END IF
 IF a$ = "h" THEN HardwareMenu():goto mainmenu: END IF
-IF a$ = "s" THEN ScreenAlignmentMenu():goto mainmenu: END IF
-IF (a$ <> "e") and (a$<>"r") THEN GO TO waitkey: END IF
-
-IF (a$="r") THEN RANDOMIZE USR 0: END IF
+IF a$ = "a" THEN ScreenAlignmentMenu():goto mainmenu: END IF
+IF a$ = "s" THEN SoundMenu():goto mainmenu: END IF
+IF (a$ <> " ") THEN GO TO waitkey: END IF
 
 BORDER 7: PAPER 7: INK 0: BRIGHT 0: CLS
 STOP
