@@ -38,26 +38,20 @@ Main:
       rst $08
       db F_OPEN      
       jr nc, load
-; --- Open ZXCU.BIN file for Uno DOS
+; --- Open ZXCU.BIN file for UnoDOS
 UnoD  ld a, 0 
       ld b, FA_READ   
-      ld hl, zxuccmdfile   
-      rst $08
-      db F_OPEN      
-      jr nc, load
-UnoD2 ld a, 0 
-      ld b, FA_READ   
-      ld hl, zxucappfile
+      ld hl, zxucdosfile   
       rst $08
       db F_OPEN      
       jr nc, load
 ; --- Load ZXCU.BIN at address 45000
 load  ld (FHandle),a
       ld HL, 45000
-      ld bc, 16384   ; bc=longitud del fichero, en exceso, por asegurar
+      ld bc, 16384   ; bc=file length ,in excess just to be sure
       ld a,(FHandle)
       rst $08
-      db F_READ      ; Leer archivo     
+      db F_READ      ; read file
       ret c
 ; --- Close file      
       ld a,(FHandle)
@@ -149,11 +143,9 @@ RegistersToLoad: db $00, $06, $0B,$0E, $0F,$80, $81, $82, $83, $84, $85
 FHandle: db 0
 zxucbinfile: db "/BIN/ZXUC.BIN"
              db 0
-zxuccmdfile: db "/CMD/ZXUC.BIN"
+zxucdosfile: db "/DOS/ZXUC.BIN"
              db 0
-zxucappfile: db "/APP/ZXUC.BIN"
-             db 0
-cfgpath: db "/SYS/CONFIG/ZXUCCFG/"
+cfgpath: db "/SYS/CONFIG/ZXUCCFG/" ; Config files should be at /SYS/CONFIG and that folder should exist even for UnoDOS
 cfgfile: ds 8
          db 0   
 cfgbuffer: ds 256

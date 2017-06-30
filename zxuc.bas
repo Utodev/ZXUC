@@ -7,7 +7,7 @@
 
 SUB header()
 	PRINT AT 0,0;
-	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.7 (C) 2016 Uto "; PAPER 1;"                                ";
+	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.8 (C) 2016 Uto "; PAPER 1;"                                ";
 END SUB
 
 FUNCTION getKey() as String
@@ -83,7 +83,7 @@ FUNCTION BinaryStr(value as UByte) AS string
 	     LET t$="0"+t$
 	  END IF
   NEXT i
-  LET t$ = str$(value) + " " + t$
+  LET t$ = t$ + " " + str$(value)
   RETURN t$
 END FUNCTION
 
@@ -117,7 +117,7 @@ FUNCTION turboDesc(value as UByte) AS String
 	IF value=0 THEN RETURN "3.5 Mhz" : END IF
 	IF value=1 THEN RETURN "  7 Mhz": END IF
 	IF value=2 THEN RETURN " 14 Mhz": END IF
-	IF value=3 THEN RETURN "*28 Mhz": END IF
+	IF value=3 THEN RETURN " 28 Mhz": END IF
 	RETURN ""
 END FUNCTION
 
@@ -246,7 +246,7 @@ SUB SoundMenu()
 	PRINT "    \{p7}\{i0}D\{p0}\{i7} BEEPER & SPECDRUM :" ; StereoDescription(CHANNELBEEPERDRUM): PRINT
 	PRINT "    \{p7}\{i0}R\{p0}\{i7} RESTORE DEFAULTS (ACB)": PRINT
 	PRINT
-	PRINT "    "; PAPER 5; INK 0; " Reg #F7 [ "; BinaryStr(STEREO) ; " ] "
+	PRINT "    "; PAPER 5; INK 0; " Port #F7 [ "; BinaryStr(STEREO) ; " ] "
 
 	waitkeySound:
 	LET a$ = inkey$()
@@ -421,7 +421,7 @@ SUB TurboMenu()
 	'Change Turbo Mode
 	IF a$ = "t" THEN 
 		LET TURBO = TURBO + 1
-		IF TURBO = 3 THEN LET TURBO = 0: END IF
+		IF TURBO = 4 THEN LET TURBO = 0: END IF
 		SCANDBLCTRL = (TURBO << 6) bOR (COPT<<5) bOR (FREQ<<2) bOR (ENSCAN << 1) bOR (VGA)
         setZXUnoReg($0B,SCANDBLCTRL): PAUSE 10: GO TO turbomenu
     END IF

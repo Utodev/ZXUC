@@ -1,3 +1,11 @@
+Version 0.8 - June 2017
+=======================
+- Fixed text in Sound options, it should show port $F7, not register $F7
+- While showing register/port values binary format is now shown before decimal
+- Added support for 28Mhz turbo mode
+
+
+
 Version 0.7 - Feb 2017
 ======================
 - Support for sound (stereo) settings via port $F7

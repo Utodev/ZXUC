@@ -33,9 +33,9 @@ Main:
       ret
 
 
-; --------------------------------------------------
-; +++ SAVE A CONFIGURATION FILE - DON'T OPEN GUI +++
-; --------------------------------------------------
+; ---------------------------------
+; +++ SAVE A CONFIGURATION FILE +++
+; ---------------------------------
 
 saveConfig:
 ; --- Preserve HL, pointer to parameters
@@ -154,7 +154,7 @@ usage:   db "USAGE: .ZXUCSAVE <configname>"
          db $0D
          db "- If config already exists it will be overwritten"
          db $0D, 0
-cfgpath: db "/SYS/CONFIG/ZXUCCFG"
+cfgpath: db "/SYS/CONFIG/ZXUCCFG" ; Configuration folder should be this one even if running UnoDOS
 cfgpathslash: db 0
 cfgfile: db 0
          ds 7
