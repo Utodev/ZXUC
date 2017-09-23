@@ -30,7 +30,7 @@ SUB setZXUnoReg(numreg as UByte, value as UByte)
   OUT 64571, numreg: OUT 64827, value
 END SUB
 
-FUNCTION getULATiming(value as UByte)
+FUNCTION getULATiming(value as UByte) as UByte
 	DIM ULATIMINGMODE0, ULATIMINGMODE1 as UByte
 	LET ULATIMINGMODE0  = (value bAND 00010000b) >> 4
 	LET ULATIMINGMODE1  = (value bAND 01000000b) >> 6
@@ -395,7 +395,7 @@ END SUB
 
 SUB TurboMenu()
 	CLS
-	DIM SCANDBLCTRL, TURBO, FREQ, ENSCAN, VGA as UByte
+	DIM SCANDBLCTRL, TURBO, FREQ, ENSCAN, VGA, COPT as UByte
 	turbomenu:
 	header(): PRINT:PRINT:PRINT
 	LET SCANDBLCTRL = getZXUnoReg($0b)
