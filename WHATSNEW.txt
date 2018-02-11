@@ -1,3 +1,9 @@
+Version 0.9 - February 2018
+===========================
+- Added support for QAOPSPCM protocol for DB9 joystick
+- Some fixed to code to save space
+
+
 Version 0.8 - June 2017
 =======================
 - Fixed text in Sound options, it should show port $F7, not register $F7
