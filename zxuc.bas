@@ -1,4 +1,4 @@
-'ZXUC (C) Uto 2016-2017
+'ZXUC (C) Uto 2016-2018
 
 '******************************************************************************
 '***************************          AUX           ***************************
@@ -7,7 +7,7 @@
 
 SUB header()
 	PRINT AT 0,0;
-	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.8 (C) 2016 Uto "; PAPER 1;"                                ";
+	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.9 (C) 2018 Uto "; PAPER 1;"                                ";
 END SUB
 
 FUNCTION getKey() as String
@@ -88,12 +88,13 @@ FUNCTION BinaryStr(value as UByte) AS string
 END FUNCTION
 
 FUNCTION joyType(value as UByte) AS String
-	IF value=0 THEN RETURN "Disabled  " : END IF
+	IF value=0 THEN RETURN "Disabled  ": END IF
 	IF value=1 THEN RETURN "Kempston  ": END IF
 	IF value=2 THEN RETURN "SJS1      ": END IF
 	IF value=3 THEN RETURN "SJS2      ": END IF
 	IF value=4 THEN RETURN "Protek    ": END IF
-	IF value=5 THEN RETURN "Fuller     ": END IF
+	IF value=5 THEN RETURN "Fuller    ": END IF
+	IF value=5 THEN RETURN "QAOPSPCM  ": END IF
 	RETURN ""
 END FUNCTION
 
@@ -198,7 +199,7 @@ SUB JoystickMenu()
     'Change DB9 joystick mode
 	IF a$ = "2" THEN 
 		LET JoyDB9 = JoyDB9+1
-		IF JoyDB9 = 6 THEN LET JoyDB9 = 0: END IF
+		IF JoyDB9 = 7 THEN LET JoyDB9 = 0: END IF
 		JOYCONF = (JoyDB9AutoFire << 7) bOR (JoyDB9 << 4) bOR (JoyKeyAutoFire << 3) bOR JoyKey
         setZXUnoReg(6,JOYCONF): GO TO joymenu
     END IF
