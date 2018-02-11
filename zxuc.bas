@@ -94,7 +94,7 @@ FUNCTION joyType(value as UByte) AS String
 	IF value=3 THEN RETURN "SJS2      ": END IF
 	IF value=4 THEN RETURN "Protek    ": END IF
 	IF value=5 THEN RETURN "Fuller    ": END IF
-	IF value=5 THEN RETURN "QAOPSPCM  ": END IF
+	IF value=6 THEN RETURN "QAOPSPCM  ": END IF
 	RETURN ""
 END FUNCTION
 
