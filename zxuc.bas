@@ -1,4 +1,4 @@
-'ZXUC (C) Uto 2016-2018
+'ZXUC (C) Uto 2016-2021
 
 '******************************************************************************
 '***************************          AUX           ***************************
@@ -7,7 +7,7 @@
 
 SUB header()
 	PRINT AT 0,0;
-	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 0.9 (C) 2018 Uto "; PAPER 1;"                                ";
+	PRINT PAPER 1;"                                "; INK 0; BRIGHT 1; PAPER 6; " ZX-UNO CONFIG 1.2 (C) 2022 Uto "; PAPER 1;"                                ";
 END SUB
 
 FUNCTION getKey() as String
@@ -186,13 +186,14 @@ SUB JoystickMenu()
 	PRINT "    \{p7}\{i0}4\{p0}\{i7} DB9 Autofire: "; onOff(JoyDB9AutoFire): PRINT
 	PRINT
 	PRINT "    "; PAPER 5; INK 0; " Reg #06 [ "; BinaryStr(JOYCONF) ; " ] "
+	
 
 	waitkeyJoystick:
 	LET a$ = getKey()
 	'Change key joystick mode
 	IF a$ = "1" THEN 
 		LET JoyKey = JoyKey+1
-		IF JoyKey = 6 THEN LET JoyKey = 0: END IF
+		IF JoyKey = 7 THEN LET JoyKey = 0: END IF
 		JOYCONF = (JoyDB9AutoFire << 7) bOR (JoyDB9 << 4) bOR (JoyKeyAutoFire << 3) bOR JoyKey
         setZXUnoReg(6,JOYCONF): GO TO joymenu
     END IF
@@ -487,6 +488,9 @@ SUB HardwareMenu()
 	PRINT "   \{p7}\{i0}R\{p0}\{i7} Radastan mode : "; onOff(notBitTest(DEVCTRL2,2))
 	PRINT "   \{p7}\{i0}T\{p0}\{i7} Timex modes   : "; onOff(notBitTest(DEVCTRL2,1))
 	PRINT "   \{p7}\{i0}U\{p0}\{i7} ULAplus       : "; onOff(notBitTest(DEVCTRL2,0))
+	PRINT "   \{p7}\{i0}J\{p0}\{i7} Joy Splitter  : "; onOff(bitTest(DEVCTRL2,5))
+	PRINT "   \{p7}\{i0}D\{p0}\{i7} Specdrum      : "; onOff(notBitTest(DEVCTRL2,3))
+	PRINT "   \{p7}\{i0}X\{p0}\{i7} Mixer         : "; onOff(notBitTest(DEVCTRL2,4))
 	PRINT "   \{p7}\{i0}C\{p0}\{i7} Contended Mem : "; onOff(notBitTest(MASTERCONF,5))
 	PRINT "   \{p7}\{i0}K\{p0}\{i7} Keyboard      : "; keyBoardType(bitTest(MASTERCONF,3))
 	PRINT "   \{p7}\{i0}L\{p0}\{i7} ULA Timing    : "; ULATimingValue(ULATIMING)
@@ -573,6 +577,25 @@ SUB HardwareMenu()
 		DEVCTRL2 = bitToggle(DEVCTRL2, 0)
         setZXUnoReg($0f,DEVCTRL2): GO TO hardwaremenu
     END IF
+
+	'Toggle JoySplitter
+	IF a$ = "j" THEN 
+		DEVCTRL2 = bitToggle(DEVCTRL2, 5)
+        setZXUnoReg($0f,DEVCTRL2): GO TO hardwaremenu
+    END IF
+
+	'Toggle Specdrum
+	IF a$ = "d" THEN 
+		DEVCTRL2 = bitToggle(DEVCTRL2, 3)
+        setZXUnoReg($0f,DEVCTRL2): GO TO hardwaremenu
+    END IF
+
+	'Toggle Mixer
+	IF a$ = "x" THEN 
+		DEVCTRL2 = bitToggle(DEVCTRL2, 4)
+        setZXUnoReg($0f,DEVCTRL2): GO TO hardwaremenu
+    END IF
+
 
 	IF a$ = " " THEN LET a$ = "" : RETURN: END IF
 		GO TO waitkeyHardware

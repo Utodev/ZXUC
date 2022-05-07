@@ -11,6 +11,8 @@
 ; --- ZXUNO details
       zxuno_port equ 64571
       REGISTERS_TO_LOAD_COUNT equ FHandle - RegistersToLoad
+; --- Binary file details
+      ZXUC_ADDR equ 29000      
 
 org $2000
 
@@ -45,9 +47,9 @@ UnoD  ld a, 0
       rst $08
       db F_OPEN      
       jr nc, load
-; --- Load ZXCU.BIN at address 45000
+; --- Load ZXCU.BIN at address ZXUC_ADDR
 load  ld (FHandle),a
-      ld HL, 45000
+      ld HL, ZXUC_ADDR
       ld bc, 16384   ; bc=file length ,in excess just to be sure
       ld a,(FHandle)
       rst $08
@@ -60,7 +62,7 @@ load  ld (FHandle),a
       ret c
 ; --- Jump to address 45000 forcing exit from ESXDOS ROM so standard ROM is avaliable
       rst $18
-      dw 45000
+      dw ZXUC_ADDR
       ret
 
 ; --------------------------------------------------

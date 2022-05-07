@@ -1,3 +1,9 @@
+Version 1.2 - May 2022
+======================
+- Added support for MIXER, COVOX and JOYSPLITTER enable/disable
+- Changed load address to 29.000, for +3DOS compatibility
+
+
 Version 0.9 - February 2018
 ===========================
 - Added support for QAOPSPCM protocol for DB9 joystick
