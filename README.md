@@ -4,7 +4,7 @@ A menu guided setup utility for ZX-Uno and settings set configurator. Allows to 
 ## Build instructions
 * Compile the BAS file with [ZX-Basic](http://www.boriel.com/wiki/en/index.php/ZXBasic) (requires Python to run):
 
-  `python zxbc.py ZXUC.BAS -O9 -S 45000`
+  `python zxbc.py ZXUC.BAS -O9 -S 29000`
 
 * Compile the ASM files with [Pasmo](http://pasmo.speccy.org/):
 
@@ -12,6 +12,16 @@ A menu guided setup utility for ZX-Uno and settings set configurator. Allows to 
   `pasmo zxucsave.asm ZXUCSAVE`
 
 * Copy the `ZXUC`, `ZXUCSAVE` and `ZXUC.BIN` files in the `/BIN` folder of your SD card. 
+
+## As tap file
+
+* You can also compile ZXUC as a .tap file, just make:
+
+`python zxbc.py ZXUC.BAS -O9 -S 29000 -t -B -a`
+
+You cannot save or load configurations with the tap file though.
+
+Since version 1.2, tap file is included in the download folder for convenience, but it's not necesary if you use the others.
 
 ## Usage
 
